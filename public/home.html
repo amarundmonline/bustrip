@@ -1,0 +1,116 @@
+<section class="app-search-area sect parent-search">
+    <div ng-show="rtSrCn.lastfrom !== undefined && rtSrCn.lastto !== undefined" class="text-center remember-search history-SlideUp">Last Search : From:<strong>{{rtSrCn.lastfrom}}</strong> - To:<strong>{{rtSrCn.lastto}}</strong> </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 ">
+                <div>
+                    <form name="searchForm" class="form-inline text-center" ng-submit="rtSrCn.rtSrch(searchForm.$valid)" novalidate>
+                        <div class="form-group app-srch-canvas">
+                            <!--<div angucomplete-alt id="ex1" placeholder="FROM" maxlength="50" pause="100" selected-object="rtSrCn.srcInpSrc" local-data="rtSrCn.placeArray" search-fields="name" title-field="name" minlength="1" input-class="form-control form-control-small" match-class="highlight" field-required="true" input-name="fromPlace"></div>-->
+                            <input type="text" placeholder="FROM" ng-model="rtSrCn.FromSrc" typeahead-no-results="rtSrCn.resulta" uib-typeahead="state.name for state in rtSrCn.states | filter:$viewValue | limitTo:8" class="form-control" name="fromPlace" autocomplete="off" typeahead-on-select="rtSrCn.filtDataA(rtSrCn.FromSrc,rtSrCn.toDst)" ng-change="rtSrCn.filtDataA(rtSrCn.FromSrc,rtSrCn.toDst)" ng-class="(rtSrCn.rotate ? 'txt-bx-a':'txt-bx-b')+' '+(rtSrCn.clickAct ? 'active':'')" required>
+                            <ul class="dropdown-menu no-result" ng-class="{'active':rtSrCn.resulta}" ng-if="rtSrCn.resulta">
+                                <li><a href="#">No Search Result</a></li>
+                            </ul> <span class="error-msg-srch" style="color:#ffffff" ng-show="rtSrCn.onErMsg"><span ng-hide="searchForm.fromPlace.$valid">This field is required</span></span>
+                        </div>
+                        <div class="form-group app-srch-canvas"><span class="btn btn-success btn-interchange" ng-click="rtSrCn.interChange()"><span class="glyphicon glyphicon-random"  ng-class="rtSrCn.rotate ? 'rt-a':'rt-b'"></span></span>
+                        </div>
+                        <div class="form-group app-srch-canvas" ng-class="rtSrCn.rotate ? 'txt-bx-a':'txt-bx-b'">
+                            <!--<div angucomplete-alt id="ex2" placeholder="TO" maxlength="50" pause="100" selected-object="rtSrCn.srcInpDst" local-data="rtSrCn.placeArray" search-fields="name" title-field="name" minlength="1" input-class="form-control form-control-small" match-class="highlight" field-required="true" input-name="toPlace"></div>-->
+                            <input type="text" placeholder="TO" ng-model="rtSrCn.toDst" typeahead-no-results="rtSrCn.resultb" uib-typeahead="state.name for state in rtSrCn.states | filter:$viewValue | limitTo:8" class="form-control" name="toPlace" autocomplete="off" typeahead-on-select="rtSrCn.filtDataB(rtSrCn.toDst,rtSrCn.FromSrc)" ng-change="rtSrCn.filtDataB(rtSrCn.toDst,rtSrCn.FromSrc)" ng-class="(rtSrCn.rotate ? 'txt-bx-a':'txt-bx-b')+' '+(rtSrCn.clickAct ? 'active':'')" required>
+                            <ul class="dropdown-menu no-result" ng-class="{'active':rtSrCn.resultb}" ng-if="rtSrCn.resultb">
+                                <li><a href="#">No Search Result</a></li>
+                            </ul> <span class="error-msg-srch" style="color:#ffffff" ng-show="rtSrCn.onErMsg"><span ng-hide="searchForm.toPlace.$valid">This field is required</span></span>
+                        </div>
+                        <div class="form-group app-srch-canvas">
+                            <div class="dropdown">
+                                <a class="dropdown-toggle" id="dropdownStart" role="button" data-toggle="dropdown" href="#">
+                                    <div class="input-group date">
+                                        <input type="text" class="form-control" data-ng-model="rtSrCn.dataArray.onwardCal" placeholder="ONWARD DATE" name="onwardDate" readonly="readonly" required> <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                                </a>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                    <datetimepicker data-ng-model="rtSrCn.dataArray.onwardCal" data-datetimepicker-config="{ dropdownSelector: '#dropdownStart',startView:'day', minView:'day', renderOn: 'end-date-changed', modelType: 'YYYY-MM-DD' }" data-on-set-time="rtSrCn.startDateOnSetTime()" data-before-render="rtSrCn.startDateBeforeRender($dates)"></datetimepicker>
+                                </ul>
+                            </div> <span class="error-msg-srch" style="color:#ffffff" ng-show="rtSrCn.onErMsg"><span ng-hide="searchForm.onwardDate.$valid">This field is required</span></span>
+                        </div>
+                        <div class="form-group app-srch-canvas">
+                            <div class="dropdown">
+                                <a class="dropdown-toggle" id="dropdownEnd" role="button" data-toggle="dropdown" href="#">
+                                    <div class="input-group date">
+                                        <input type="text" class="form-control" data-ng-model="rtSrCn.dataArray.returnCal" placeholder="RETURN DATE" name="returnDate" readonly="readonly"> <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> </div>
+                                </a>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                    <datetimepicker data-ng-model="rtSrCn.dataArray.returnCal" data-min-date="minDate" data-datetimepicker-config="{ dropdownSelector: '#dropdownEnd',startView:'day', minView:'day', renderOn: 'start-date-changed', modelType: 'YYYY-MM-DD' }" data-on-set-time="rtSrCn.endDateOnSetTime()" data-before-render="rtSrCn.endDateBeforeRender($view, $dates, $leftDate, $upDate, $rightDate)"></datetimepicker>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" id="search_btn" class="btn btn-info app-btn-style">SEARCH BUSES</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="app-promotion-area">
+    <div class="container">
+        <div class="row" ng-init="imgdata=[{content:'UPTO RS 150 INSTANT DISCOUNT',url:'/files/images/BookMyShow_web_tile.png'},{content:'Upto Rs 100 Discount on APSRTC buses',url:'/files/images/Offers_Buses.png'},{content:'GETAWAY SALE !',url:'/files/images/Offers_Hotels_General.png'}]">
+            <div ng-if="rtSrCn.exp" class="col-sm-4 text-center cool" ng-repeat="img in imgdata">
+                <div class="well app-well-bg"><span class="app-promotion-head">{{img.content}}</span>
+                    <div class="clearfix"></div> <img ng-src="{{img.url}}" class="img-responsive app-img-style"> </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section>
+    <div class="container">
+        <div class="row mr-space-pro">
+            <div ng-if="rtSrCn.exp" class="col-sm-12 text-center cool">
+                <h3>UNIQUE ONLINE BUS BOOKING PLATFORM</h3>
+                <p>Tripit is India's largest online bus ticketing platform, trusted by over 6 million Indians. With a sale of over 6,00,00,000 tickets via web, mobile, and our bus agents, redBus stands at the top of the game in bus ticketing. redBus.in operates on over 70000 routes and is associated with 2300 reputed bus operators. Try the redBus experience today.</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6 mr-space-md">
+                <div class="row">
+                    <div class="col-sm-3"><img src="/files/images/Red_DealsCreative.png" class="img-responsive"></div>
+                    <div class="col-sm-9">
+                        <h4>TOP DEALS</h4>
+                        <p>Get a little extra! Additional discounts sponsored by your favorite bus operators exclusively on bus tickets booked via Tripit</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 mr-space-md">
+                <div class="row">
+                    <div class="col-sm-3"><img src="/files/images/multimedia_icon.png" class="img-responsive"></div>
+                    <div class="col-sm-9">
+                        <h4>RATINGS AND PICTURE REVIEWS</h4>
+                        <p>Rely on ratings and actual photos from fellow travellers to choose your bus!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="col-sm-6 mr-space-md">
+                <div class="row">
+                    <div class="col-sm-3"><img src="/files/images/rest_stops.png" class="img-responsive"></div>
+                    <div class="col-sm-9">
+                        <h4>REST STOPS</h4>
+                        <p>Get information on rest stops along the way.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 mr-space-md">
+                <div class="row">
+                    <div class="col-sm-3"><img src="/files/images/GPS_tracking_icon.png" class="img-responsive"></div>
+                    <div class="col-sm-9">
+                        <h4>LIVE TRACKING</h4>
+                        <p>Track your bus with our ‘Track My Bus’ feature and know the exact location in real-time.Stay informed and keep your family informed!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+

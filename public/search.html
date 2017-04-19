@@ -1,0 +1,274 @@
+<div class="bs-loading-dv" ng-hide="rtSrRsCn.bsDataLoad"> <span><img width="150"  class="img-style" src="/files/images/loadingBus.gif"></span> </div>
+<div class="bs-loading-dv" ng-show="rtSrRsCn.bsNoData"><span>No Busses Available<br/><img width="150" class="img-style" src="/files/images/felix_thinking.gif"></span></div>
+<section class="sect">
+    <div class="container">
+        <div class="row" style="position:relative">
+            <div class="col-sm-12" ng-show="rtSrRsCn.bsDataLoad && !(rtSrRsCn.bsNoData)">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="srCntrl-style">
+                            <form class="form-inline">
+                                <div class="form-group pull-right">
+                                    <label>Result Per Page</label>
+                                    <select class="form-control srCntrl-style-control" ng-change="rtSrRsCn.checkPages()" ng-model="rtSrRsCn.pageSize" id="sel1">
+                                        <option ng-value="2">2</option>
+                                        <option ng-value="5">5</option>
+                                        <option ng-value="10">10</option>
+                                        <option ng-value="15">15</option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <ul class="pagination custpage-top pull-left">
+                            <li><a class="unselectable" ng-click="rtSrRsCn.previousPage()">Previous</a></li>
+                            <li ng-repeat="page in rtSrRsCn.pagination" ng-click="rtSrRsCn.currentPageActive(page)" ng-class="rtSrRsCn.currentPage === page ?'active':''"><a class="unselectable">{{page+1}}</a></li>
+                            <li><a class="unselectable" ng-click="rtSrRsCn.nextPage()">Next</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12" ng-show="rtSrRsCn.bsDataLoad && !(rtSrRsCn.bsNoData)">
+                <div class="well well-sm text-center">
+                    <label>Sort By: </label>
+                    <label class="checkbox-inline unselectable">
+                        <cust-check-box trval="'busName'" fval="'busName'" new-obj="rtSrRsCn.theObj.value" dial="cool(message)"></cust-check-box> Name</label> |
+                    <label class="checkbox-inline unselectable">
+                        <cust-check-box trval="'arr'" fval="'busName'" new-obj="rtSrRsCn.theObj.value" dial="cool(message)"></cust-check-box>
+                        <!--<input type="checkbox" value="" ng-model="rtSrRsCn.filtOpt" ng-true-value="'arr'" ng-false-value="'busName'">-->Time</label> |
+                    <label class="checkbox-inline unselectable">
+                        <cust-check-box trval="'ticketPrice'" fval="'busName'" new-obj="rtSrRsCn.theObj.value" dial="cool(message)"></cust-check-box>
+                        <!--<input type="checkbox" value="" ng-model="rtSrRsCn.filtOpt" ng-true-value="'ticketPrice'" ng-false-value="'busName'">-->Price</label> | <span class="sort-ang glyphicon unselectable" ng-click="rtSrRsCn.tglSort()" ng-class="rtSrRsCn.tglValue === true ? 'glyphicon-arrow-up' : 'glyphicon-arrow-down'"></span> </div>
+            </div>
+            <div ng-show="rtSrRsCn.bsDataLoad" class="col-sm-12">
+                <div class="row bs-row-bdr cool" ng-hide="rtSrRsCn.bsNoData" ng-repeat="busDetails in rtSrRsCn.SearchResult | orderBy:rtSrRsCn.filtOpt:rtSrRsCn.tglValue | startForm:rtSrRsCn.currentPage*rtSrRsCn.pageSize | limitTo:rtSrRsCn.pageSize">
+                    <div class="col-sm-1 row-default">
+                        <div class="bs-service service-header text-center"> <span class="glyphicon glyphicon-road app-rd-clr"></span> {{busDetails.busId}}</div>
+                    </div>
+                    <div class="col-sm-4 row-default" ng-class="rtSrRsCn.filtOpt === 'busName' ? 'row-active':''">
+                        <div class="bs-service bs-ex-start">
+                            <div class="service-name">{{busDetails.busName | uppercase}}</div>
+                            <div class="service-name"></div>
+                            <div class="service-type app-strong">{{busDetails.busType | uppercase}}</div>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="bs-ex-feature"><a class="unselectable" ng-click="rtSrRsCn.showAminity(busDetails.busId)">Amenities</a> </div>
+                    </div>
+                    <div class="col-sm-3 row-default" ng-class="rtSrRsCn.filtOpt === 'arr' ? 'row-active' : ''">
+                        <div class="bs-service">
+                            <div class="service-id text-center app-strong"><span>{{busDetails.arr}}</span> <span class="glyphicon glyphicon-resize-horizontal"></span> <span>{{busDetails.dep}}</span></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 row-default" ng-class="rtSrRsCn.filtOpt === 'ticketPrice' ? 'row-active':''">
+                        <div class="bs-service">
+                            <div class="service-id text-center app-strong"><span>{{busDetails.ticketPrice | currency:'INR '}}</span></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 row-default">
+                        <div class="bs-service">
+                            <div class="service-book">
+                                <button class="btn btn-success" ng-click="rtSrRsCn.viewBusSeats(busDetails.busId);">VIEW SEATS {{seatactive}}</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <!--View Seats Templates start-->
+                    <div ng-show="rtSrRsCn.seatsActive === busDetails.busId" class="col-sm-12 cssSlideUpTwo" ng-class="rtSrRsCn.seatsActive === busDetails.busId ? 'active-de':'deactive-de'">
+                        <div class="cssSlideUpMargin cssSlideUpMarginBtm row">
+                            <div class="col-sm-4 text-center">Bus Id:{{busDetails.busId}}</div>
+                            <div class="col-sm-4 text-center"><span ng-if="rtSrRsCn.localError && busDetails.busId === rtSrRsCn.localSelectedBus" class="maxerror">Maximum 4 Seats Only</span></div>
+                            <div class="col-sm-4 text-center">{{rtSrRsCn.formCityActive}} - {{rtSrRsCn.toCityActive}}</div>
+                        </div>
+                        <div class="row text-center">
+                            <div class="col-sm-3">
+                                <div class="row">
+                                    <div class="col-sm-7">
+                                        <div class="well-sm">Available</div>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <div class="well well-sm seat-Ind">&nbsp;</div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-7">
+                                        <div class="well-sm">Ladies</div>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <div class="well well-sm seat-Ind seat-Ind-ladies">&nbsp;</div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-7">
+                                        <div class="well-sm">Booked</div>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <div class="well well-sm seat-Ind seat-Ind-booked">&nbsp;</div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-7">
+                                        <div class="well-sm">selected</div>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <div class="well well-sm seat-Ind seat-Ind-selected">&nbsp;</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-9">
+                                <div class="row well">
+                                    <div class="col-sm-2">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="seatStyle well well-sm">Driver</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-1" ng-repeat="seats in busDetails.seats.leftRow">
+                                        <div class="row">
+                                            <div class="col-sm-12" ng-repeat="onseat in seats">
+                                                <!--{{onseat.bookedSt}}-->
+                                                
+                                                <div class="seatStyle well well-sm unselectable" ng-click="!onseat.bookedSt ? rtSrRsCn.activeSeatsNow(busDetails.busId,onseat.sId,busDetails.ticketPrice,onseat.seatEngage) : false" ng-class="{'seat-Ind-selected':onseat.seatEngage && !onseat.bookedSt ,'seat-Ind-booked':onseat.bookedSt,'seat-Ind-ladies':onseat.bookedBy === 'female'}">{{onseat.sId}}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                    <div class="col-sm-12">
+                                        <div class="well-sm"></div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="well-sm"></div>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                    <div class="col-sm-2 rseat">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="seatStyle well well-sm">Window</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-1 rseat" ng-repeat="onseat in busDetails.seats.rightRow">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="seatStyle well well-sm unselectable" ng-click="!onseat.bookedSt ? rtSrRsCn.activeSeatsNow(busDetails.busId,onseat.sId,busDetails.ticketPrice,onseat.seatEngage) : false" ng-class="{'seat-Ind-selected':onseat.seatEngage && !onseat.bookedSt,'seat-Ind-booked':onseat.bookedSt,'seat-Ind-ladies':onseat.bookedBy === 'female'}">{{onseat.sId}}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row cssSlideUpMarginBtm">
+                            <div class="col-sm-12 text-center">
+                                <button class="btn btn-success" data-toggle="modal" data-target="#myModal" ng-click="rtSrRsCn.bookTicket()">Book Ticket</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!--View Seats Template end-->
+                    <div class="clearfix"></div>
+                    <!---->
+                    <!--Aminity Details-->
+                    <!--am{{rtSrRsCn.aminity}},in{{$index}}-->
+                    <div ng-show="rtSrRsCn.aminity === busDetails.busId" class="cssSlideUp fec-styles" ng-class="rtSrRsCn.aminity === busDetails.busId ? 'active-de':'deactive-de'">
+                        <div class="col-sm-2" ng-repeat="amenity in busDetails.amenities track by $index" ng-if="amenity==='01AC'">
+                            <div class="am-style well-sm"><span class="glyphicon glyphicon-grain"></span> AC</div>
+                        </div>
+                        <div class="col-sm-2" ng-repeat="amenity in busDetails.amenities track by $index" ng-if="amenity==='02WB'">
+                            <div class="am-style well-sm"><span class="glyphicon glyphicon-tint"></span> Water Bottle</div>
+                        </div>
+                        <div class="col-sm-2" ng-repeat="amenity in busDetails.amenities track by $index" ng-if="amenity==='03ET'">
+                            <div class="am-style well-sm"><span class="glyphicon glyphicon-phone"></span> E-Ticket</div>
+                        </div>
+                        <div class="col-sm-2" ng-repeat="amenity in busDetails.amenities track by $index" ng-if="amenity==='04CP'">
+                            <div class="am-style well-sm"><span class="glyphicon glyphicon-flash"></span> Charging Point</div>
+                        </div>
+                        <div class="col-sm-2" ng-repeat="amenity in busDetails.amenities track by $index" ng-if="amenity==='05LU'">
+                            <div class="am-style well-sm"><span class="glyphicon glyphicon-lock"></span> Luggage Safe</div>
+                        </div>
+                        <div class="col-sm-2" ng-repeat="amenity in busDetails.amenities track by $index" ng-if="amenity==='06EE'">
+                            <div class="am-style well-sm"><span class="glyphicon glyphicon-fire"></span> Emergency Exit</div>
+                        </div>
+                        <div class="col-sm-2" ng-repeat="amenity in busDetails.amenities track by $index" ng-if="amenity==='07FD'">
+                            <div class="am-style well-sm"><span class="glyphicon glyphicon-cutlery"></span> Food</div>
+                        </div>
+                        <div class="col-sm-2" ng-repeat="amenity in busDetails.amenities track by $index" ng-if="amenity==='08CR'">
+                            <div class="am-style well-sm"><span class="glyphicon glyphicon-credit-card"></span> Cancel Refund</div>
+                        </div>
+                        <div class="col-sm-2" ng-repeat="amenity in busDetails.amenities track by $index" ng-if="amenity==='09BT'">
+                            <div class="am-style well-sm"><span class="glyphicon glyphicon-record"></span> Bus Tracking</div>
+                        </div>
+                        <div class="col-sm-2" ng-repeat="amenity in busDetails.amenities track by $index" ng-if="amenity==='10MC'">
+                            <div class="am-style well-sm"><span class="glyphicon glyphicon-music"></span> Music</div>
+                        </div>
+                        <div class="col-sm-2" ng-repeat="amenity in busDetails.amenities track by $index" ng-if="amenity==='11VD'">
+                            <div class="am-style well-sm"><span class="glyphicon glyphicon-film"></span> Video</div>
+                        </div>
+                        <div class="col-sm-2" ng-repeat="amenity in busDetails.amenities track by $index" ng-if="amenity==='12EA'">
+                            <div class="am-style well-sm"><span class="glyphicon glyphicon-user"></span> Expert Assistance</div>
+                        </div>
+                    </div>
+                    <!--Aminity Details-->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div id="mySuBModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Booking Successfully completed</h4> </div>
+            <div class="modal-body">
+                <h4>Booking Details</h4> </div>
+        </div>
+    </div>
+</div>
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button ng-click="rtSrRsCn.resetPayment()" type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Please fill Booking Details</h4> </div>
+            <div class="modal-body">
+                <form ng-if="rtSrRsCn.activeSeatsNowArray.length !== 0" class="form-inline bookT" name="toPaymentGate" ng-submit="rtSrRsCn.contactServer(toPaymentGate.$valid)" novalidate="novalidate">
+                    <div>
+                        <div class="mr-bt-10" ng-repeat="seat in rtSrRsCn.activeSeatsNowArray">
+                            <div class="form-group">
+                                <div class="form-control half-width" ng-bind="seat.SeatId"></div>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Name" ng-model="rtSrRsCn.finalBooking[seat.SeatId].bookingName" name="bookingName{{seat.SeatId}}" required>
+                                <br/> <span class="val-errors" ng-show="((toPaymentGate.bookingName{{seat.SeatId}}.$error.required) && toPaymentGate.bookingName{{seat.SeatId}}.$dirty) || (toPaymentGate.bookingName{{seat.SeatId}}.$error.required && rtSrRsCn.globalNotValid)">This filed is required</span> </div>
+                            <div class="form-group">
+                                <input type="number" class="form-control half-width" placeholder="Age" ng-model="rtSrRsCn.finalBooking[seat.SeatId].bookingAge" name="bookingAge{{seat.SeatId}}" min="1" max="99" required>
+                                <br/> <span class="val-errors" ng-show="toPaymentGate.bookingAge{{seat.SeatId}}.$error.required && toPaymentGate.bookingAge{{seat.SeatId}}.$dirty || (rtSrRsCn.globalNotValid && toPaymentGate.bookingAge{{seat.SeatId}}.$error.required)">This filed is required</span> <span class="val-errors" ng-show="(toPaymentGate.bookingAge{{seat.SeatId}}.$error.max || toPaymentGate.bookingAge{{seat.SeatId}}.$error.min) && toPaymentGate.bookingAge{{seat.SeatId}}.$dirty">Min:0, Max:99</span> </div>
+                            <div class="form-group">
+                                <select class="form-control" ng-model="rtSrRsCn.finalBooking[seat.SeatId].bookingGender" name="bookingGender{{seat.SeatId}}" required>
+                                    <option value="" selected>Select</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                                <br/> <span class="val-errors" ng-show="toPaymentGate.bookingGender{{seat.SeatId}}.$error.required && toPaymentGate.bookingGender{{seat.SeatId}}.$dirty || (rtSrRsCn.globalNotValid && toPaymentGate.bookingGender{{seat.SeatId}}.$error.required)">This filed is required</span> </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <button class="btn btn-success" type="submit">Pay Amounts</button>
+                </form>
+                <div class="fareCalculator" ng-if="rtSrRsCn.activeSeatsNowArray.length !== 0">
+                    <div class="mr-bt-10">Basic Fare: <span class="fareCalSpStyle" ng-bind="rtSrRsCn.fareCalculator.baseFare(rtSrRsCn.activeSeatsNowArray[0].Price)"></span></div>
+                    <div class="mr-bt-10">Total Number of seats: <span class="fareCalSpStyle" ng-bind="rtSrRsCn.activeSeatsNowArray.length"></span></div>
+                    <div class="mr-bt-10">Tax (1%): <span class="fareCalSpStyle" ng-bind="rtSrRsCn.fareCalculator.taxSlab(rtSrRsCn.activeSeatsNowArray[0].Price,rtSrRsCn.activeSeatsNowArray.length)"></span></div>
+                    <div class="mr-bt-10">Internet Handling Fees: <span class="fareCalSpStyle" ng-bind="rtSrRsCn.fareCalculator.internetHandlingFee()"></span></div>
+                    <div class="mr-bt-10">Total Fare: <span class="fareCalSpStyle" ng-bind="rtSrRsCn.fareCalculator.totalFareCalculator(rtSrRsCn.activeSeatsNowArray[0].Price,rtSrRsCn.activeSeatsNowArray.length,rtSrRsCn.fareCalculator.currentTaxCalculated,rtSrRsCn.fareCalculator.internetHandlingFee())"></span></div>
+                </div>
+                <!-- {{rtSrRsCn.finalBooking}} -->
+                <div ng-if="rtSrRsCn.activeSeatsNowArray.length === 0">Please select atleast one seat for booking.</div>
+            </div>
+            <div class="modal-footer">
+                <button ng-click="rtSrRsCn.resetPayment()" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
